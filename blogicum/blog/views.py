@@ -1,6 +1,7 @@
 from django.shortcuts import render
+from django.http import Http404
 
-# Create your views here.
+
 posts = [
     {
         'id': 0,
@@ -43,6 +44,7 @@ posts = [
                 укутывал их, чтобы не испортились от дождя.''',
     },
 ]
+POSTS_DICT = {post['id']: post for post in posts}
 
 
 def index(request):
@@ -53,7 +55,9 @@ def index(request):
 
 def post_detail(request, pk):
     template = 'blog/detail.html'
-    context = {'post': posts[pk]}
+    if POSTS_DICT.get(pk) is None:
+        raise Http404("Post does not exist")
+    context = {'post': POSTS_DICT.get(pk)}
     return render(request, template, context)
 
 
